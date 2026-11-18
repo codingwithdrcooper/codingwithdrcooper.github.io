@@ -1,0 +1,928 @@
+<title>Jeffrey Carpenter</title>
+<meta name="description" content="Jeffrey Carpenter — founder and co-artistic director of Bricolage Production Company, Pittsburgh. Maker of secret destinations.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#050608;
+  --ink:#0b0d11;
+  --panel:#101318;
+  --line:#23262d;
+  --bone:#ebe6da;
+  --dim:#9a968c;
+  --faint:#5a5b60;
+  --uv:#7fdcff;
+  --uv-soft:rgba(127,220,255,.14);
+  --ember:#ffb25c;
+  --ember-soft:rgba(255,178,92,.16);
+  --serif:"Cormorant Garamond", Georgia, serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans:"Poppins", system-ui, sans-serif;
+  --mx:50vw; --my:40vh;
+  --gutter:clamp(16px,5vw,72px);
+  color-scheme: dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);color:var(--bone);
+  font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.7;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+body.locked{overflow:hidden}
+::selection{background:var(--uv);color:var(--void)}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1px solid var(--uv);outline-offset:4px}
+
+/* ───────── atmosphere ───────── */
+#motes{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.grain{position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1.2s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-4%)}60%{transform:translate(-4%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+.veil{position:fixed;inset:0;z-index:50;pointer-events:none;
+  background:radial-gradient(circle 46vmax at var(--mx) var(--my), transparent 0%, rgba(5,6,8,.12) 40%, rgba(5,6,8,.52) 100%);
+  transition:opacity 1s}
+.flash{position:fixed;inset:0;z-index:70;pointer-events:none;background:#dff6ff;opacity:0}
+
+/* ───────── threshold ───────── */
+#threshold{position:fixed;inset:0;z-index:100;display:grid;place-items:center;text-align:center;padding:24px}
+#threshold .lid{position:absolute;left:0;right:0;height:50.5%;background:#000;transition:transform 1.6s cubic-bezier(.7,0,.2,1)}
+#threshold .lid.top{top:0;border-bottom:1px solid #111}
+#threshold .lid.bot{bottom:0}
+#threshold.open .lid.top{transform:translateY(-101%)}
+#threshold.open .lid.bot{transform:translateY(101%)}
+#threshold.open .door{opacity:0;transform:scale(.96)}
+#threshold.gone{display:none}
+.door{position:relative;z-index:2;max-width:440px;transition:opacity .6s, transform .8s}
+.door .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--faint);margin-bottom:28px}
+.door p.whisper{font-family:var(--serif);font-style:italic;font-size:clamp(22px,4.4vw,30px);line-height:1.35;color:var(--bone);margin-bottom:40px;min-height:3em}
+.hold{position:relative;width:112px;height:112px;margin:0 auto;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--uv);user-select:none;-webkit-user-select:none;touch-action:none}
+.hold svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.hold circle{fill:none;stroke-width:1}
+.hold .track{stroke:#1d2229}
+.hold .fill{stroke:var(--uv);stroke-dasharray:339.3;stroke-dashoffset:339.3;filter:drop-shadow(0 0 6px var(--uv))}
+.hold .pulse{position:absolute;inset:18px;border-radius:50%;border:1px solid rgba(127,220,255,.35);animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.12);opacity:.25}}
+.door .fine{margin-top:34px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--faint)}
+.door .skip{margin-top:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--faint);text-decoration:underline;text-underline-offset:4px}
+.door .skip:hover{color:var(--dim)}
+
+/* ───────── depth gauge ───────── */
+.gauge{position:fixed;left:clamp(14px,2.4vw,34px);top:50%;transform:translateY(-50%);z-index:40;display:flex;gap:16px;align-items:center;
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);opacity:0;transition:opacity 1s}
+body.entered .gauge{opacity:1}
+.gauge .rail{position:relative;width:1px;height:46vh;background:var(--line)}
+.gauge .rail .bead{position:absolute;left:-3px;width:7px;height:7px;border-radius:50%;background:var(--uv);box-shadow:0 0 10px var(--uv);top:0;transition:top .15s linear}
+.gauge ol{list-style:none;position:absolute;left:0;top:0;height:100%}
+.gauge ol li{position:absolute;left:-2px;width:5px;height:1px;background:var(--faint)}
+.gauge ol li a{position:absolute;left:12px;top:-8px;white-space:nowrap;text-decoration:none;opacity:0;transition:opacity .3s, color .3s;padding:2px 0}
+.gauge:hover ol li a, .gauge ol li.on a{opacity:1}
+.gauge ol li.on a{color:var(--uv)}
+.gauge .readout{position:absolute;left:0;top:calc(100% + 16px);white-space:nowrap;color:var(--dim)}
+.gauge .readout b{font-weight:500;color:var(--bone)}
+
+/* ───────── layout ───────── */
+main{position:relative;z-index:2}
+section{position:relative;padding:clamp(96px,16vh,180px) var(--gutter);max-width:1240px;margin:0 auto}
+.stratum-label{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--uv);display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.stratum-label::before{content:"";width:34px;height:1px;background:var(--uv);box-shadow:0 0 8px var(--uv)}
+h2{font-family:var(--serif);font-weight:300;font-size:clamp(44px,8vw,104px);line-height:.95;letter-spacing:-.01em;margin-bottom:28px}
+h2 em{font-style:italic;color:var(--dim)}
+.lede{font-family:var(--serif);font-size:clamp(21px,2.4vw,27px);line-height:1.45;color:var(--dim);max-width:34ch;font-weight:300}
+.reveal{opacity:.35;transform:translateY(22px);transition:opacity 1.2s ease, transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.reveal.seen{opacity:1;transform:none}
+.divider{height:1px;max-width:1240px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line) 20%,var(--line) 80%,transparent)}
+
+/* ───────── hero ───────── */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:120px var(--gutter) 110px;overflow:hidden}
+.hero .inner{position:relative;z-index:2;max-width:1240px;margin:0 auto;width:100%}
+.hero .pre{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--faint);margin-bottom:26px}
+.hero h1{font-family:var(--serif);font-weight:300;font-size:clamp(64px,15vw,212px);line-height:.84;letter-spacing:-.025em}
+.hero h1 span{display:block}
+.hero h1 .last{padding-left:clamp(28px,9vw,150px);font-style:italic;color:var(--dim)}
+.hero .role{margin-top:40px;display:flex;flex-wrap:wrap;gap:12px 40px;align-items:baseline;justify-content:space-between}
+.hero .role p{font-size:15px;color:var(--dim);max-width:44ch}
+.hero .role p strong{color:var(--bone);font-weight:400}
+.typer{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--uv);min-height:1.7em}
+.typer::after{content:"▍";animation:blink 1s steps(1) infinite;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+.ink{position:absolute;inset:0;z-index:1;pointer-events:none;
+  -webkit-mask-image:radial-gradient(circle 150px at var(--lx,-500px) var(--ly,-500px), #000 0%, rgba(0,0,0,.6) 45%, transparent 100%);
+          mask-image:radial-gradient(circle 150px at var(--lx,-500px) var(--ly,-500px), #000 0%, rgba(0,0,0,.6) 45%, transparent 100%)}
+.ink span{position:absolute;font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--uv);text-shadow:0 0 12px var(--uv);white-space:nowrap}
+.ink .scrawl{font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:0;font-size:24px}
+.hero .hint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:2;font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--faint);text-align:center}
+.hero .hint i{display:block;width:1px;height:42px;margin:12px auto 0;background:linear-gradient(var(--faint),transparent);animation:drip 2.4s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ───────── founder ───────── */
+.founder-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(40px,7vw,110px);margin-top:70px;align-items:start}
+.prose p{margin-bottom:1.3em;color:#cfcabe;max-width:60ch}
+.prose p:first-child::first-letter{font-family:var(--serif);font-size:4.4em;float:left;line-height:.8;padding:6px 12px 0 0;color:var(--uv);font-weight:300}
+.stats{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.stat{padding:26px 22px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat .n{font-family:var(--serif);font-size:clamp(46px,6vw,68px);line-height:1;font-weight:300}
+.stat .n sup{font-size:.4em;color:var(--uv);vertical-align:top;margin-left:2px}
+.stat .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-top:10px;line-height:1.5}
+.pull{margin-top:44px;padding-left:22px;border-left:1px solid var(--uv)}
+.pull q{font-family:var(--serif);font-style:italic;font-size:clamp(22px,2.6vw,30px);line-height:1.3;quotes:"“" "”"}
+.pull cite{display:block;margin-top:12px;font-family:var(--mono);font-style:normal;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+/* ───────── archive ───────── */
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin:56px 0 30px}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--line);border-radius:100px;color:var(--dim);transition:all .3s}
+.chip:hover{color:var(--bone);border-color:var(--faint)}
+.chip.on{color:var(--void);background:var(--uv);border-color:var(--uv);box-shadow:0 0 18px rgba(127,220,255,.35)}
+.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.file{position:relative;background:var(--void);padding:28px 26px 26px;min-height:300px;display:flex;flex-direction:column;text-align:left;transition:background .5s;overflow:hidden}
+.file::before{content:"";position:absolute;inset:0;background:radial-gradient(circle 220px at var(--fx,50%) var(--fy,50%), var(--uv-soft), transparent 70%);opacity:0;transition:opacity .4s}
+.file:hover::before,.file:focus-visible::before{opacity:1}
+.file.hide{display:none}
+.file .meta{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.file .meta b{font-weight:400;color:var(--uv)}
+.file h3{font-family:var(--serif);font-weight:400;font-size:38px;line-height:1;margin:34px 0 14px;position:relative}
+.file .tag{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.35;color:var(--dim);position:relative}
+.file .redact{margin-top:auto;padding-top:26px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:#b9b4a8;line-height:1.9;position:relative}
+.file .redact s{text-decoration:none;position:relative;white-space:nowrap}
+.file .redact s::after{content:"";position:absolute;left:-2px;right:-2px;top:3px;bottom:2px;background:var(--bone);transform-origin:right;transition:transform .6s cubic-bezier(.7,0,.2,1)}
+.file:hover .redact s::after,.file:focus-visible .redact s::after{transform:scaleX(0)}
+.file .open{margin-top:18px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);position:relative;transition:color .3s}
+.file:hover .open{color:var(--uv)}
+
+dialog{margin:auto;max-width:min(680px,calc(100vw - 32px));width:100%;max-height:calc(100svh - 48px);background:var(--panel);color:var(--bone);border:1px solid var(--line);padding:clamp(28px,5vw,52px);box-shadow:0 40px 120px #000}
+dialog::backdrop{background:rgba(2,3,4,.82);backdrop-filter:blur(6px)}
+dialog[open]{animation:surface .6s cubic-bezier(.2,.7,.2,1)}
+@keyframes surface{from{opacity:0;transform:translateY(20px) scale(.98)}}
+dialog .meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--uv)}
+dialog h3{font-family:var(--serif);font-weight:300;font-size:clamp(42px,7vw,64px);line-height:1;margin:18px 0 10px}
+dialog .tag{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--dim);margin-bottom:26px}
+dialog .body p{margin-bottom:1em;color:#cfcabe}
+dialog .role-line{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+dialog .role-line b{color:var(--bone);font-weight:400}
+dialog .close{position:absolute;top:16px;right:18px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--faint);padding:8px}
+dialog .close:hover{color:var(--bone)}
+
+/* ───────── radio ───────── */
+.radio{margin-top:64px;border:1px solid var(--line);background:linear-gradient(180deg,#0f1115,#08090b);padding:clamp(22px,4vw,44px);position:relative;overflow:hidden}
+.radio::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 30% 0%, var(--ember-soft), transparent 70%);opacity:var(--glow,0);transition:opacity .4s;pointer-events:none}
+.radio-top{display:grid;grid-template-columns:1fr auto;gap:clamp(20px,4vw,48px);align-items:center;position:relative}
+.band{position:relative;height:96px;border:1px solid #2a2620;background:#0b0a08;overflow:hidden;cursor:ew-resize;touch-action:none;box-shadow:inset 0 0 40px rgba(255,178,92,.06)}
+.band .scale{position:absolute;inset:0}
+.band .tick{position:absolute;bottom:0;width:1px;background:#4a4236}
+.band .tick.major{background:#7a6b55}
+.band .num{position:absolute;top:14px;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:#7a6b55}
+.band .st{position:absolute;bottom:30px;width:5px;height:5px;margin-left:-2px;border-radius:50%;background:var(--ember);opacity:.35}
+.band .needle{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#ff5a3c;box-shadow:0 0 12px #ff5a3c,0 0 2px #fff}
+.knob-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.knob{width:86px;height:86px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#3a3d44,#15171b 70%);box-shadow:0 8px 24px #000, inset 0 1px 0 rgba(255,255,255,.08);position:relative;cursor:grab;touch-action:none}
+.knob:active{cursor:grabbing}
+.knob::after{content:"";position:absolute;left:50%;top:9px;width:3px;height:16px;margin-left:-1.5px;border-radius:2px;background:var(--ember);box-shadow:0 0 8px var(--ember)}
+.knob-wrap small{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+.radio-mid{display:flex;flex-wrap:wrap;gap:16px 36px;align-items:center;justify-content:space-between;margin:26px 0 30px;position:relative}
+.freq{font-family:var(--mono);font-size:clamp(34px,5vw,48px);color:var(--ember);text-shadow:0 0 18px rgba(255,178,92,.5);letter-spacing:.02em}
+.freq small{font-size:.32em;letter-spacing:.2em;margin-left:8px;color:#a07c52}
+.signal{display:flex;gap:4px;align-items:flex-end;height:24px}
+.signal i{width:5px;background:#2b2722;transition:background .2s}
+.signal i.lit{background:var(--ember);box-shadow:0 0 6px var(--ember)}
+.power{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--line);padding:10px 16px;color:var(--dim);display:flex;gap:10px;align-items:center}
+.power .led{width:7px;height:7px;border-radius:50%;background:#2b2722}
+.power[aria-pressed="true"]{color:var(--bone);border-color:#5a4a36}
+.power[aria-pressed="true"] .led{background:var(--ember);box-shadow:0 0 8px var(--ember)}
+.broadcast{position:relative;min-height:190px;border-top:1px dashed #2a2620;padding-top:26px;display:grid;grid-template-columns:200px 1fr;gap:28px}
+.broadcast .call{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#a07c52;line-height:1.8}
+.broadcast .call b{display:block;font-family:var(--serif);font-weight:400;font-size:30px;letter-spacing:0;text-transform:none;color:var(--bone);line-height:1.1;margin-top:6px}
+.broadcast .txt{font-family:var(--mono);font-size:14px;line-height:1.85;color:#d9cbb4;max-width:62ch;word-break:break-word}
+.broadcast .txt.static{color:#6d6253}
+.radio .stations{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;position:relative}
+.radio .stations button{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:#7a6b55;border:1px solid #2a2620;padding:6px 10px}
+.radio .stations button:hover,.radio .stations button.on{color:var(--ember);border-color:#5a4a36}
+
+/* ───────── stage ───────── */
+.stage-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,7vw,110px);margin-top:70px}
+.marquee{position:relative;border:1px solid var(--line);padding:clamp(26px,4vw,44px);overflow:hidden;background:radial-gradient(ellipse 80% 70% at 50% 120%, rgba(255,120,60,.13), transparent 70%)}
+.marquee .meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ember)}
+.marquee h3{font-family:var(--serif);font-weight:300;font-size:clamp(52px,7vw,86px);line-height:.95;margin:20px 0 8px}
+.marquee h3 em{color:var(--dim)}
+.marquee p{color:#cfcabe;max-width:46ch;margin-top:14px}
+.marquee .furnace{position:absolute;right:-10px;bottom:0;width:58%;opacity:.5;pointer-events:none}
+.marquee blockquote{margin-top:22px;font-family:var(--serif);font-style:italic;font-size:20px;line-height:1.4;color:var(--dim);border-left:1px solid var(--ember);padding-left:16px;position:relative}
+.marquee blockquote cite{display:block;font-family:var(--mono);font-size:10px;font-style:normal;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:8px}
+.roles{list-style:none;border-top:1px solid var(--line)}
+.roles li{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:15px 0;border-bottom:1px solid var(--line);position:relative;transition:padding .4s}
+.roles li::before{content:"";position:absolute;left:-24px;top:50%;width:0;height:1px;background:var(--uv);transition:width .4s}
+.roles li:hover{padding-left:14px}
+.roles li:hover::before{width:24px}
+.roles .t{font-family:var(--serif);font-size:clamp(22px,2.4vw,28px);font-weight:400}
+.roles .c{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);text-align:right;white-space:nowrap}
+.roles li:hover .c{color:var(--uv)}
+.subhead{font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);margin:46px 0 14px}
+.subhead:first-child{margin-top:0}
+
+/* ───────── encounter ───────── */
+.encounter{margin-top:64px;border:1px solid var(--line);min-height:440px;position:relative;display:grid;place-items:center;padding:clamp(28px,6vw,72px);text-align:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 50%, rgba(127,220,255,.07), transparent 60%)}
+.encounter .step{max-width:620px;animation:surface .9s cubic-bezier(.2,.7,.2,1)}
+.encounter .count{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--faint);margin-bottom:22px}
+.encounter .prompt{font-family:var(--serif);font-weight:300;font-size:clamp(28px,4vw,44px);line-height:1.2;margin-bottom:36px}
+.encounter .choices{display:grid;gap:10px}
+.encounter .choices button{border:1px solid var(--line);padding:16px 22px;text-align:left;display:flex;gap:16px;align-items:baseline;transition:all .3s;background:rgba(5,6,8,.5)}
+.encounter .choices button span{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.14em}
+.encounter .choices button:hover,.encounter .choices button:focus-visible{border-color:var(--uv);box-shadow:0 0 24px rgba(127,220,255,.12);transform:translateX(4px)}
+.encounter .choices button:hover span{color:var(--uv)}
+.begin{display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--uv);border:1px solid var(--uv);padding:15px 26px;box-shadow:0 0 22px rgba(127,220,255,.22), inset 0 0 18px rgba(127,220,255,.08);transition:all .3s}
+.begin:hover{background:var(--uv);color:var(--void)}
+.safeword{position:absolute;bottom:18px;right:20px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding:6px}
+.safeword:hover{color:var(--ember)}
+.assignment h4{font-family:var(--serif);font-weight:300;font-size:clamp(54px,9vw,96px);line-height:.95;margin:6px 0 16px;text-shadow:0 0 40px rgba(127,220,255,.25)}
+.assignment p{color:#cfcabe;margin:0 auto 30px;max-width:48ch}
+
+/* ───────── samizdat / end ───────── */
+.end{text-align:center;padding-bottom:120px}
+.end h2{margin-left:auto;margin-right:auto}
+.end .lede{margin:0 auto}
+.end .actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:48px}
+.ghost{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line);padding:15px 24px;text-decoration:none;transition:all .3s}
+.ghost:hover{color:var(--bone);border-color:var(--faint)}
+footer{position:relative;z-index:2;padding:40px var(--gutter) 60px;display:flex;flex-wrap:wrap;gap:12px 30px;justify-content:space-between;max-width:1240px;margin:0 auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--faint);border-top:1px solid var(--line)}
+footer a{color:var(--dim)}
+.toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);z-index:90;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;padding:14px 22px;border:1px solid var(--line);background:rgba(11,13,17,.94);color:var(--bone);opacity:0;pointer-events:none;transition:all .5s;max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ───────── responsive ───────── */
+@media (max-width:900px){
+  .founder-grid,.stage-grid{grid-template-columns:1fr}
+  .broadcast{grid-template-columns:1fr;gap:14px}
+}
+@media (max-width:760px){
+  .gauge{left:auto;right:0;top:0;transform:none;width:100%;height:2px;display:block}
+  .gauge .rail{width:100%;height:2px;background:transparent}
+  .gauge .rail .bead{display:none}
+  .gauge ol{display:none}
+  .gauge .readout{display:none}
+  .gauge .bar{position:absolute;left:0;top:0;height:2px;background:var(--uv);box-shadow:0 0 8px var(--uv);width:var(--p,0%)}
+  .radio-top{grid-template-columns:1fr}
+  .knob-wrap{flex-direction:row;justify-content:center}
+  .knob{width:64px;height:64px}
+  .band{height:84px}
+  .hero h1 .last{padding-left:18px}
+  .roles .c{white-space:normal}
+  .file{min-height:0}
+  .file h3{margin-top:26px}
+  .ink .wide{display:none}
+  .ink span{font-size:10px}.ink .scrawl{font-size:19px}
+}
+@media (min-width:761px){.gauge .bar{display:none}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+<script>document.body.classList.add("locked")</script>
+
+<canvas id="motes" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="flash" aria-hidden="true"></div>
+
+<!-- ═════════ THRESHOLD ═════════ -->
+<div id="threshold" role="dialog" aria-label="Entrance">
+  <div class="lid top"></div><div class="lid bot"></div>
+  <div class="door">
+    <div class="kicker">Pittsburgh · a secret destination</div>
+    <p class="whisper" id="whisper"></p>
+    <button class="hold" id="hold" aria-label="Press and hold to enter">
+      <svg viewBox="0 0 112 112" aria-hidden="true"><circle class="track" cx="56" cy="56" r="54"/><circle class="fill" id="holdFill" cx="56" cy="56" r="54"/></svg>
+      <span class="pulse" aria-hidden="true"></span>
+      <span>Hold</span>
+    </button>
+    <div class="fine">Press &amp; hold to accept your role</div>
+    <button class="skip" id="skip">or simply walk in</button>
+  </div>
+</div>
+
+<!-- ═════════ DEPTH GAUGE ═════════ -->
+<nav class="gauge" aria-label="Strata">
+  <div class="rail"><div class="bead" id="bead"></div><ol id="gaugeList"></ol><div class="bar"></div></div>
+  <div class="readout">Depth <b id="depth">0000</b> m</div>
+</nav>
+
+<main>
+<!-- ═════════ HERO ═════════ -->
+<header class="hero" id="surface" data-stratum="Surface">
+  <div class="ink" id="ink" aria-hidden="true">
+    <span style="left:6%;top:14%">Subject: J. Carpenter</span>
+    <span style="right:8%;top:19%">First contact — 2001</span>
+    <span class="scrawl" style="left:52%;top:9%">he is expecting you</span>
+    <span style="left:10%;bottom:22%">40.4406° N, 79.9959° W</span>
+    <span style="right:6%;bottom:30%">Status: still conjuring</span>
+    <span class="scrawl" style="left:38%;bottom:14%">the context defines the content</span>
+    <span class="wide" style="right:24%;top:44%">Last seen: Carrie Furnaces, after dark</span>
+    <span class="wide" style="left:3%;top:46%">Agent · Director · Player</span>
+    <span class="scrawl" style="right:10%;bottom:10%">bring comfortable shoes</span>
+  </div>
+  <div class="inner">
+    <div class="pre reveal">Founder &amp; Co-Artistic Director · Bricolage Production Company</div>
+    <h1 class="reveal"><span>Jeffrey</span><span class="last">Carpenter</span></h1>
+    <div class="role reveal">
+      <p><strong>Native Pittsburgher. Maker of rooms you walk into and come out of changed.</strong> For twenty-five years he has cast audiences as participants: blindfolded, recruited, sent underground, handed an itinerary for a place that doesn't exist.</p>
+      <div class="typer" id="typer" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="hint" id="hint">Move your light<i></i></div>
+</header>
+
+<div class="divider"></div>
+
+<!-- ═════════ I · FOUNDER ═════════ -->
+<section id="founder" data-stratum="The Founder">
+  <div class="stratum-label reveal">Stratum I</div>
+  <h2 class="reveal">The <em>Founder</em></h2>
+  <p class="lede reveal">In 2001 he started a theatre company named for the art of building something new out of whatever is at hand.</p>
+
+  <div class="founder-grid">
+    <div class="prose reveal">
+      <p>Jeffrey Carpenter grew up in Pittsburgh, trained at NYU's Tisch School of the Arts, and came home to found Bricolage Production Company. It started as a home for new plays and readings. Over time it became something harder to describe: a company that builds alternatives to sitting in the dark and watching.</p>
+      <p>The turn came while working on the U.S. premiere of Teatro de los Sentidos' <em>Echo of the Shadow</em>. Travelers wandered dreamlike chambers looking for a lost shadow, and the company never really came back out. Since then the work has asked one question: what if the audience wasn't watching the story, but <em>inside</em> it?</p>
+      <p>At Bricolage you aren't an audience member. You're a <em>participant</em>, cast in the narrative and responsible for your part. The company supplies roughly eighty percent of the experience and trusts you with the rest. Physical safety comes first, consent is built in, and a safe word always ends it.</p>
+      <p>He runs the company with his wife and co-artistic director, Tami Dixon. After nearly twenty years in a downtown Cultural District storefront, Bricolage moved to Community Forge in Wilkinsburg, a former elementary school now becoming a creative workshop for the neighborhood.</p>
+    </div>
+    <div class="reveal">
+      <div class="stats">
+        <div class="stat"><div class="n" data-count="2001">0</div><div class="l">Bricolage founded</div></div>
+        <div class="stat"><div class="n"><span data-count="25">0</span><sup>yrs</sup></div><div class="l">Making work with artists &amp; audiences</div></div>
+        <div class="stat"><div class="n"><span data-count="3">0</span><sup>decades</sup></div><div class="l">Acting &amp; directing at Quantum Theatre</div></div>
+        <div class="stat"><div class="n"><span data-count="50">0</span><sup>≈</sup></div><div class="l">Cast &amp; crew in STRATA</div></div>
+      </div>
+      <div class="pull">
+        <q>Everyone has a job. No one is the most important person in the room.</q>
+        <cite>— J.C., on Midnight Radio in the classroom</cite>
+      </div>
+      <p style="margin-top:34px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--faint);line-height:1.9">
+        JULY 10, 2012 — PITTSBURGH CITY COUNCIL DECLARES “BRICOLAGE DAY.”<br>
+        STRATA — POST-GAZETTE PRODUCTION OF THE YEAR · COVER OF <i>AMERICAN THEATRE</i>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═════════ II · ARCHIVE ═════════ -->
+<section id="archive" data-stratum="The Archive">
+  <div class="stratum-label reveal">Stratum II</div>
+  <h2 class="reveal">Case <em>Files</em></h2>
+  <p class="lede reveal">Secret destinations, fake travel agencies, a cult inside a fitness club. Hover to lift the redactions, then open a file.</p>
+  <div class="filters reveal" id="filters" role="group" aria-label="Filter case files">
+    <button class="chip on" data-f="all">All files</button>
+    <button class="chip" data-f="immersive">Immersive</button>
+    <button class="chip" data-f="site">Site-specific</button>
+    <button class="chip" data-f="game">Games &amp; encounters</button>
+    <button class="chip" data-f="havel">Havel</button>
+  </div>
+  <div class="files reveal" id="files"></div>
+</section>
+
+<dialog id="caseFile" aria-labelledby="cfTitle">
+  <button class="close" id="cfClose" aria-label="Close file">CLOSE ✕</button>
+  <div class="meta" id="cfMeta"></div>
+  <h3 id="cfTitle"></h3>
+  <div class="tag" id="cfTag"></div>
+  <div class="body" id="cfBody"></div>
+  <div class="role-line" id="cfRole"></div>
+</dialog>
+
+<div class="divider"></div>
+
+<!-- ═════════ III · MIDNIGHT RADIO ═════════ -->
+<section id="radio" data-stratum="Midnight Radio">
+  <div class="stratum-label reveal">Stratum III</div>
+  <h2 class="reveal">Midnight <em>Radio</em></h2>
+  <p class="lede reveal">A 1940s-style radio show, live on stage, with every footstep and slammed door made by hand. Turn the dial and find a signal.</p>
+
+  <div class="radio reveal" id="radioBox">
+    <div class="radio-top">
+      <div class="band" id="band" role="slider" tabindex="0" aria-label="Frequency" aria-valuemin="88" aria-valuemax="108" aria-valuenow="90.0">
+        <div class="scale" id="scale"></div>
+        <div class="needle" id="needle"></div>
+      </div>
+      <div class="knob-wrap">
+        <div class="knob" id="knob" aria-hidden="true"></div>
+        <small>Drag · scroll · arrows</small>
+      </div>
+    </div>
+    <div class="radio-mid">
+      <div class="freq"><span id="freq">90.0</span><small>MHz · FM</small></div>
+      <div class="signal" id="signal" aria-hidden="true"><i style="height:20%"></i><i style="height:40%"></i><i style="height:60%"></i><i style="height:80%"></i><i style="height:100%"></i></div>
+      <button class="power" id="power" aria-pressed="false"><span class="led"></span><span id="powerLbl">Sound off</span></button>
+    </div>
+    <div class="broadcast">
+      <div class="call" id="call">Searching…<b>— static —</b></div>
+      <div class="txt static" id="txt">~ ~ ~</div>
+    </div>
+    <div class="stations" id="stationBtns" aria-label="Station presets"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═════════ IV · THE PLAYER ═════════ -->
+<section id="player" data-stratum="The Player">
+  <div class="stratum-label reveal">Stratum IV</div>
+  <h2 class="reveal">The <em>Player</em></h2>
+  <p class="lede reveal">He doesn't only build the rooms. He walks into them too, as an actor and director across Pittsburgh and beyond.</p>
+
+  <div class="stage-grid">
+    <div class="marquee reveal">
+      <svg class="furnace" viewBox="0 0 300 220" aria-hidden="true" fill="none" stroke="#ff8a4c" stroke-width="1">
+        <path d="M20 220V120h30v100M60 220V80h22v140M92 220V140h40v80M140 220V60l10-20 10 20v160M170 220V110h50v110M228 220V90h18v130M252 220V150h40v70"/>
+        <path d="M150 40v-30M146 18h8M60 80h22M66 80V60h10v20M184 110l10-26 10 26" opacity=".7"/>
+        <path d="M0 200h300" opacity=".4"/>
+      </svg>
+      <div class="meta">Quantum Theatre · Summer 2026</div>
+      <h3>Prospero<br><em>at the furnace</em></h3>
+      <p>In the summer of 2026 he played Prospero in Quantum Theatre's <em>The Tempest</em>, directed by Karla Boos and staged after dark among the iron towers of the Carrie Blast Furnaces. Shakespeare's conjurer stirs up one last storm, then sets down his staff.</p>
+      <blockquote>We are such stuff / As dreams are made on.<cite>— Prospero, The Tempest IV.i</cite></blockquote>
+    </div>
+    <div class="reveal">
+      <div class="subhead">Quantum Theatre — three decades</div>
+      <ul class="roles">
+        <li><span class="t">The Tempest</span><span class="c">Prospero · 2026</span></li>
+        <li><span class="t">King Lear</span><span class="c">Actor</span></li>
+        <li><span class="t">Antony and Cleopatra</span><span class="c">Actor</span></li>
+        <li><span class="t">The Merchant of Venice</span><span class="c">Actor</span></li>
+        <li><span class="t">A Midsummer Night's Dream</span><span class="c">Actor</span></li>
+        <li><span class="t">Betrayal · The Collection</span><span class="c">Actor · Pinter</span></li>
+        <li><span class="t">El Paso Blue · Mouth to Mouth</span><span class="c">Actor</span></li>
+        <li><span class="t">Hamlet</span><span class="c">Director</span></li>
+      </ul>
+      <div class="subhead">Václav Havel — the Vaněk plays</div>
+      <ul class="roles">
+        <li><span class="t">Protest</span><span class="c">Director · Fountain Theatre, LA · 2025</span></li>
+        <li><span class="t">Audience</span><span class="c">Actor · Samizdat · 2026</span></li>
+        <li><span class="t">Protest</span><span class="c">Director &amp; actor · Samizdat · 2026</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═════════ V · THE ENCOUNTER ═════════ -->
+<section id="encounter" data-stratum="The Encounter">
+  <div class="stratum-label reveal">Stratum V</div>
+  <h2 class="reveal">Your <em>Encounter</em></h2>
+  <p class="lede reveal">At Bricolage the story isn't finished until you play your part. Answer three questions and you'll be given an assignment.</p>
+  <div class="encounter reveal" id="enc" aria-live="polite"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═════════ VI · SAMIZDAT ═════════ -->
+<section class="end" id="samizdat" data-stratum="Samizdat">
+  <div class="stratum-label reveal" style="justify-content:center">Stratum VI</div>
+  <h2 class="reveal">Passed, <em>not announced</em></h2>
+  <p class="lede reveal">In 2026 Bricolage staged three Havel plays in secret Pittsburgh locations, revealed only to people holding tickets. The best things travel hand to hand. So does this page.</p>
+  <div class="actions reveal">
+    <button class="begin" id="pass">Pass it on ↗</button>
+    <a class="ghost" href="https://www.bricolagepgh.org/" target="_blank" rel="noopener">Bricolage ↗</a>
+    <button class="ghost" id="mail" aria-label="Copy Jeff's email address">jeff@bricolagepgh.org · copy</button>
+  </div>
+</section>
+</main>
+
+<footer>
+  <span>JEFFREY CARPENTER · PITTSBURGH, PA</span>
+  <span>Bricolage Production Company · Community Forge, Wilkinsburg</span>
+  <span title="Some words open doors.">Type the conjurer's name to raise a storm.</span>
+  <span style="flex-basis:100%">An unofficial portrait, made by a friend. Not affiliated with or endorsed by Bricolage Production Company.</span>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const touch = matchMedia('(hover: none)').matches;
+const root = document.documentElement;
+
+/* ───────── toast ───────── */
+const toastEl = $('#toast'); let toastT;
+function toast(msg, ms=3200){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>toastEl.classList.remove('show'), ms); }
+
+/* ───────── threshold ───────── */
+const whispers = [
+  'You were not invited to watch.<br>You were invited to take part.',
+  'Somewhere between truth and fiction, a door is open.',
+  'Your Agent is waiting.<br>Please do not be late.'
+];
+const whisper = $('#whisper');
+whisper.innerHTML = whispers[Math.floor(Math.random()*whispers.length)];
+const threshold = $('#threshold'), hold = $('#hold'), fill = $('#holdFill');
+const CIRC = 339.3, HOLD_MS = 1500;
+let holding = false, holdStart = 0, holdRaf, entered = false;
+function enter(){
+  if (entered) return; entered = true;
+  threshold.classList.add('open');
+  document.body.classList.remove('locked');
+  document.body.classList.add('entered');
+  setTimeout(()=>threshold.classList.add('gone'), 1700);
+  setTimeout(startTyper, 900);
+}
+function holdTick(t){
+  if (!holding) return;
+  const p = Math.min(1, (t - holdStart)/HOLD_MS);
+  fill.style.strokeDashoffset = CIRC*(1-p);
+  if (p >= 1) { holding = false; enter(); return; }
+  holdRaf = requestAnimationFrame(holdTick);
+}
+function holdOn(e){ if (entered) return; e.preventDefault(); holding = true; holdStart = performance.now(); holdRaf = requestAnimationFrame(holdTick); }
+function holdOff(){ if (!holding) return; holding = false; cancelAnimationFrame(holdRaf);
+  fill.style.transition='stroke-dashoffset .5s'; fill.style.strokeDashoffset = CIRC; setTimeout(()=>fill.style.transition='',500); }
+hold.addEventListener('pointerdown', holdOn);
+['pointerup','pointerleave','pointercancel'].forEach(ev=>hold.addEventListener(ev, holdOff));
+hold.addEventListener('keydown', e=>{ if ((e.key===' '||e.key==='Enter') && !e.repeat) holdOn(e); });
+hold.addEventListener('keyup', e=>{ if (e.key===' '||e.key==='Enter') holdOff(); });
+hold.addEventListener('click', e=>e.preventDefault());
+$('#skip').addEventListener('click', enter);
+if (reduce) { /* respect motion prefs: no ritual required */ }
+setTimeout(()=>hold.focus({preventScroll:true}), 400);
+
+/* ───────── pointer light ───────── */
+let tx = innerWidth/2, ty = innerHeight*.4, cx = tx, cy = ty, lastMove = 0;
+addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; lastMove = performance.now(); }, {passive:true});
+const hero = $('#surface'), ink = $('#ink');
+function lightLoop(t){
+  // auto-wander when idle or on touch screens, so the invisible ink still surfaces
+  if (touch || t - lastMove > 4000) {
+    const w = innerWidth, h = innerHeight;
+    tx = w*(.5 + .36*Math.sin(t/3100)); ty = h*(.45 + .28*Math.sin(t/2300 + 1));
+  }
+  cx += (tx-cx)*.08; cy += (ty-cy)*.08;
+  root.style.setProperty('--mx', cx+'px'); root.style.setProperty('--my', cy+'px');
+  const r = hero.getBoundingClientRect();
+  if (r.bottom > 0) { ink.style.setProperty('--lx', (cx - r.left)+'px'); ink.style.setProperty('--ly', (cy - r.top)+'px'); }
+  requestAnimationFrame(lightLoop);
+}
+requestAnimationFrame(lightLoop);
+if (touch) $('#hint').firstChild.textContent = 'Descend';
+
+/* ───────── motes ───────── */
+const cv = $('#motes'), ctx = cv.getContext('2d');
+let W, H, DPR, motes = [], storm = 0;
+function size(){ DPR = Math.min(2, devicePixelRatio||1); W = cv.width = innerWidth*DPR; H = cv.height = innerHeight*DPR; }
+size(); addEventListener('resize', size);
+const N = reduce ? 0 : (innerWidth < 700 ? 45 : 90);
+for (let i=0;i<N;i++) motes.push({x:Math.random(), y:Math.random(), z:Math.random(), vx:(Math.random()-.5)*.00012, vy:-Math.random()*.00018-.00003, tw:Math.random()*6.28});
+function moteLoop(t){
+  ctx.clearRect(0,0,W,H);
+  const mx = cx/innerWidth, my = cy/innerHeight;
+  for (const m of motes){
+    if (storm > 0){
+      const dx = m.x-.5, dy = m.y-.5, d = Math.hypot(dx,dy)+.001;
+      m.vx += (-dy/d*.0009 - dx*.00008)*storm; m.vy += (dx/d*.0009 - dy*.00008)*storm;
+    }
+    const ddx = m.x-mx, ddy = m.y-my, dd = ddx*ddx+ddy*ddy;
+    if (dd < .006){ m.vx += ddx*.0006; m.vy += ddy*.0006; }
+    m.vx *= .985; m.vy = m.vy*.985 - .0000025;
+    m.x += m.vx + Math.sin(t/4000+m.tw)*.00005; m.y += m.vy;
+    if (m.y < -.02) m.y = 1.02; if (m.y > 1.02) m.y = -.02; if (m.x < -.02) m.x = 1.02; if (m.x > 1.02) m.x = -.02;
+    const near = Math.max(0, 1 - Math.sqrt(dd)/.35);
+    const a = (.12 + .5*m.z)*(.55+.45*Math.sin(t/900+m.tw)) + near*.45;
+    ctx.fillStyle = storm > .05 ? `rgba(200,240,255,${Math.min(1,a+.2)})` : `rgba(${near>.3?'170,230,255':'235,230,218'},${a})`;
+    ctx.beginPath(); ctx.arc(m.x*W, m.y*H, (.5+m.z*1.4)*DPR, 0, 6.283); ctx.fill();
+  }
+  storm = Math.max(0, storm - .0025);
+  requestAnimationFrame(moteLoop);
+}
+if (N) requestAnimationFrame(moteLoop);
+
+/* ───────── typer ───────── */
+const lines = ['maker of secret destinations','founder, Bricolage Production Company — 2001','creative director, Enter the Imaginarium','keeper of the Midnight Radio signal','Prospero, Carrie Blast Furnaces — 2026','director of things passed, not announced'];
+function startTyper(){
+  const el = $('#typer'); let li = 0, ci = 0, del = false;
+  if (reduce){ el.textContent = lines[0]; return; }
+  (function step(){
+    const s = lines[li];
+    if (!del){ ci++; el.textContent = s.slice(0,ci); if (ci === s.length){ del = true; return setTimeout(step, 2200); } setTimeout(step, 38+Math.random()*50); }
+    else { ci -= 2; el.textContent = s.slice(0,Math.max(0,ci)); if (ci <= 0){ del = false; ci = 0; li = (li+1)%lines.length; return setTimeout(step, 400); } setTimeout(step, 18); }
+  })();
+}
+
+/* ───────── reveal + counters ───────── */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  e.target.classList.add('seen'); io.unobserve(e.target);
+  $$('[data-count]', e.target).forEach(countUp);
+}), {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+$$('.reveal').forEach(el=>io.observe(el));
+function countUp(el){
+  const end = +el.dataset.count, start = end > 1000 ? end-40 : 0, t0 = performance.now(), dur = 1800;
+  (function f(t){ const p = Math.min(1,(t-t0)/dur), e = 1-Math.pow(1-p,4); el.textContent = Math.round(start+(end-start)*e); if (p<1) requestAnimationFrame(f); })(t0);
+}
+
+/* ───────── depth gauge ───────── */
+const strata = $$('[data-stratum]');
+const gl = $('#gaugeList');
+strata.forEach((s,i)=>{
+  const li = document.createElement('li');
+  li.style.top = (i/(strata.length-1)*100)+'%';
+  li.innerHTML = `<a href="#${s.id}">${s.dataset.stratum}</a>`;
+  gl.appendChild(li);
+});
+const bead = $('#bead'), depthEl = $('#depth'), gaugeLis = $$('li', gl), gauge = $('.gauge');
+function onScroll(){
+  const max = document.documentElement.scrollHeight - innerHeight;
+  const p = max > 0 ? scrollY/max : 0;
+  bead.style.top = (p*100)+'%';
+  gauge.style.setProperty('--p', (p*100)+'%');
+  depthEl.textContent = String(Math.round(p*2001)).padStart(4,'0');
+  let cur = 0; strata.forEach((s,i)=>{ if (s.getBoundingClientRect().top < innerHeight*.45) cur = i; });
+  gaugeLis.forEach((li,i)=>li.classList.toggle('on', i===cur));
+}
+addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+/* ───────── case files ───────── */
+const files = [
+  {y:'2012', t:'STRATA', f:['immersive','site'], tag:'A private rite of passage in a secret downtown location.',
+   red:['Agent: assigned','Venue: a former fitness club','Outcome: your choice'],
+   body:['Participants arrived at a secret address and met their Agent. Each one was led, mostly alone, through a "refitnessing center" built inside an abandoned downtown gym, where a New Age wellness cult was waiting. Somewhere between truth and fiction, reality and simulation, your choices decided where you ended up.','Close to fifty artists made it. The Pittsburgh Post-Gazette named it production of the year, it made the cover of <i>American Theatre</i>, and it set the course for nearly everything Bricolage made afterward.'],
+   role:'Led the creation of the work'},
+  {y:'2014', t:'OjO', f:['immersive','site'], tag:'The Next Generation of Travel.',
+   red:['Departure: a travel agency','Destination: unlisted','Senses: rearranged'],
+   body:['It started at a mock travel agency, where small groups picked up an itinerary for an unusual tour of the world. He called it "an expedition of sorts." The trip led participants into the world of the blind. <i>Ojo</i> is Spanish for "eye."','Commissioned by the Pittsburgh Cultural Trust for the Three Rivers Arts Festival, it later traveled to the Without Walls festival at La Jolla Playhouse.'],
+   role:'Co-creator · Bricolage creative team'},
+  {y:'2015', t:'Saints Tour', f:['site'], tag:'There\'s something in the dirt.',
+   red:['Town: Braddock, PA','Vehicle: a bus','Miracles: scheduled'],
+   body:['A site-specific play by Molly Rice, built for the neighborhood it took place in. It ran as a bus and walking tour through Braddock, home of the first and last operating Pittsburgh steel mill, and along the way, magical things happened.'],
+   role:'Produced by Bricolage'},
+  {y:'2016—', t:'Enter the Imaginarium', f:['game'], tag:'Where immersive theatre meets the escape room.',
+   red:['Teams: required','Clock: running','Most: will fail'],
+   body:['A live-action adventure where groups unlock worlds within worlds while racing to find the Imaginarium\'s missing creator. <i>The Inventor\'s Paradox</i> won a Golden Lock Award. <i>The Mind\'s Eye</i> adds interactive gaming and projection mapping to a full-sensory challenge.','Now at Shaler Plaza, 880 Butler Street. Some will prevail. Most will fail.'],
+   role:'Creative director &amp; co-creator'},
+  {y:'2017', t:'The Ascendants', f:['game','immersive'], tag:'An Immersive Encounter.',
+   red:['Location: a bathhouse','Party size: intimate','Senses: awakened'],
+   body:['Part of the IE series, short and intimate theatrical encounters built to wake the senses and put each guest at the center. This one took place in the Materfamilias Bathhouse and served as a laboratory where creators and patrons explored one idea together.'],
+   role:'Co-creator &amp; director'},
+  {y:'2017', t:'DODO', f:['immersive','site'], tag:'Since 1760, they have operated in secret.',
+   red:['Society: hidden','Founded: 1760','Venue: after hours'],
+   body:['Once thought to be a legend, a secret society has been quietly growing in number and influence. DODO was made with the Carnegie Museums of Pittsburgh and staged inside the museum itself, among the specimens and the extinct.'],
+   role:'Co-creator'},
+  {y:'2018', t:'The Clearing', f:['game'], tag:'A quiet meadow. Two at a time.',
+   red:['Guests: two','Time: unclear','Past or future: unclear'],
+   body:['A short pop-up encounter for two participants at a time. You step into a quiet meadow, lost in thought and unsure what comes next. Is this the past, or the future?'],
+   role:'Co-creator'},
+  {y:'2018—19', t:'Bazaar', f:['game'], tag:'Twelve micro-pods. Twelve worlds.',
+   red:['Doors: twelve','Duration: minutes','Ages: 18+'],
+   body:['Bricolage\'s immersive fundraiser. Guests stepped one by one into twelve tiny pods, and each one held a complete experience.'],
+   role:'Co-creator'},
+  {y:'2019', t:'Project Amelia', f:['immersive','site'], tag:'What if you could let go without letting anyone down?',
+   red:['Corporation: Aura','Product: an AI','Data: yours'],
+   body:['Made with the technologists at Probable Models and written by Michael Skirpan, it was staged as the product launch of Amelia, an AI from a fictional company called Aura. Guests explored the promises and dangers of living digitally, and the AI kept watching.','It was Bricolage\'s last large immersive work before the pandemic. The collaboration later led the company to its new home at Community Forge.'],
+   role:'Co-creator'},
+  {y:'2025', t:'Protest', f:['havel'], tag:'Václav Havel. Two friends. One small request.',
+   red:['Cast: two','Venue: anywhere','Conversation: after'],
+   body:['Havel\'s 1978 one-act, in which a modest favor between friends turns into a confrontation about conscience. Bricolage brought it to the Fountain Theatre in Los Angeles, where it opened the theatre\'s upstairs space, with a conversation after every performance.','The plan is to perform it anywhere people gather: living rooms, dinner parties, backyards, classrooms, bars, and even behind bars.'],
+   role:'Director'},
+  {y:'2026', t:'Samizdat', f:['havel','site'], tag:'Passed, not announced.',
+   red:['Plays: three','Locations: undisclosed','Tickets: very few'],
+   body:['Three of Havel\'s plays (<i>Audience</i>, <i>The Unveiling</i>, <i>Protest</i>) staged in secret locations around Pittsburgh. The location was revealed only to people holding a ticket. The name comes from the underground practice of copying banned writing by hand and passing it on, which helped lead to the Velvet Revolution.'],
+   role:'Artistic director · actor in <i>Audience</i> · director of <i>Protest</i>'},
+  {y:'Ongoing', t:'Midnight Radio', f:['game'], tag:'Old-time radio, live and in the flesh.',
+   red:['Era: 1940s','Sound: handmade','You: the studio audience'],
+   body:['An ongoing series of faux radio broadcasts written by local dramatists and performed live, with Foley sound effects made in full view. The audience plays the studio audience. Early episodes, like <i>Bootleggin\' and Bathtub Gin</i>, were co-written by Carpenter, Tami Dixon and Matt Adams.','Tune the radio in Stratum III for the full story.'],
+   role:'Co-creator'}
+];
+const filesEl = $('#files');
+files.forEach((d,i)=>{
+  const b = document.createElement('button');
+  b.className = 'file'; b.dataset.f = d.f.join(' '); b.dataset.i = i;
+  b.setAttribute('aria-label', `Open case file: ${d.t}, ${d.y}`);
+  b.innerHTML = `<div class="meta"><span>File ${String(i+1).padStart(2,'0')}</span><b>${d.y}</b></div>
+    <h3>${d.t}</h3><div class="tag">${d.tag}</div>
+    <div class="redact">${d.red.map(r=>{const [k,v]=r.split(': ');return `${k}: <s>${v}</s>`}).join('<br>')}</div>
+    <div class="open">Open file →</div>`;
+  b.addEventListener('pointermove', e=>{ const r=b.getBoundingClientRect(); b.style.setProperty('--fx',(e.clientX-r.left)+'px'); b.style.setProperty('--fy',(e.clientY-r.top)+'px'); });
+  b.addEventListener('click', ()=>openFile(i));
+  filesEl.appendChild(b);
+});
+const dlg = $('#caseFile');
+function openFile(i){
+  const d = files[i];
+  $('#cfMeta').textContent = `Case file ${String(i+1).padStart(2,'0')} · ${d.y}`;
+  $('#cfTitle').textContent = d.t;
+  $('#cfTag').textContent = d.tag;
+  $('#cfBody').innerHTML = d.body.map(p=>`<p>${p}</p>`).join('');
+  $('#cfRole').innerHTML = `Carpenter's role — <b>${d.role}</b>`;
+  dlg.showModal();
+}
+$('#cfClose').addEventListener('click', ()=>dlg.close());
+dlg.addEventListener('click', e=>{ if (e.target === dlg) dlg.close(); });
+$$('#filters .chip').forEach(c=>c.addEventListener('click', ()=>{
+  $$('#filters .chip').forEach(x=>x.classList.toggle('on', x===c));
+  const f = c.dataset.f;
+  $$('.file').forEach(el=>el.classList.toggle('hide', f!=='all' && !el.dataset.f.split(' ').includes(f)));
+}));
+
+/* ───────── midnight radio ───────── */
+const stations = [
+  {f:88.7, call:'WBRC', name:'Sign-On', txt:'Good evening, ladies and gentlemen. Midnight Radio started as a one-off, late-night show for grown-ups, a supplement to the season. Audiences kept coming back, year after year, until it became the company\'s signature series.'},
+  {f:91.9, call:'KFLY', name:'The Format', txt:'A classic 1940s radio broadcast, staged live. Local writers write the scripts, actors read into vintage microphones, and every sound effect is made by hand in plain sight. Tonight you are the studio audience. Applause when the sign lights up.'},
+  {f:95.3, call:'WNZE', name:'The Noise Factory', txt:'Coconut shells for hooves, a crinkled sheet for fire, a door on wheels for a door. Bricolage\'s sound studio, The Noise Factory, now lives at Community Forge in Wilkinsburg, where the company builds the sounds of things that aren\'t there.'},
+  {f:98.5, call:'WGIN', name:'Bootleggin\' & Bathtub Gin', txt:'From the archive: an early episode written by Matt Adams, Jeffrey Carpenter and Tami Dixon. Prohibition, contraband and a lot of noise. A reminder that the show was homemade from the start.'},
+  {f:101.1, call:'WEDU', name:'Everyone Has a Job', txt:'In 2013 Midnight Radio went into classrooms, starting at Washington Middle School. By 2019 there had been sixteen residencies in eleven schools. Students write, voice and Foley their own episodes, and no one is the most important person in the room.'},
+  {f:104.7, call:'WCTY', name:'Season 14', txt:'Midnight Radio\'s fourteenth season, in residency at City Theatre, revisits two classic episodes over the holidays. Come to get your heart warmed and your belly laughed, Pittsburgh style.'},
+  {f:107.3, call:'WPOD', name:'Late Night Podcast', txt:'Missed the broadcast? The episodes live on as a podcast. Turn the lights down, put your headphones on, and let your imagination build the set.'}
+];
+const band = $('#band'), scale = $('#scale'), needle = $('#needle'), knob = $('#knob');
+const MIN = 88, MAX = 108;
+for (let f=MIN; f<=MAX; f+=.5){
+  const x = (f-MIN)/(MAX-MIN)*100, major = f%2===0;
+  const t = document.createElement('div'); t.className = 'tick'+(major?' major':''); t.style.left = x+'%'; t.style.height = major?'26px':'12px'; scale.appendChild(t);
+  if (major && f>MIN && f<MAX){ const n = document.createElement('div'); n.className='num'; n.style.left=x+'%'; n.textContent=f; scale.appendChild(n); }
+}
+stations.forEach(s=>{ const d=document.createElement('div'); d.className='st'; d.style.left=((s.f-MIN)/(MAX-MIN)*100)+'%'; scale.appendChild(d); });
+const sb = $('#stationBtns');
+stations.forEach(s=>{ const b=document.createElement('button'); b.textContent=`${s.f.toFixed(1)} ${s.call}`; b.addEventListener('click',()=>glideTo(s.f)); sb.appendChild(b); });
+
+let freq = 90.0, lastStation = null;
+const freqEl = $('#freq'), callEl = $('#call'), txtEl = $('#txt'), bars = $$('#signal i'), radioBox = $('#radioBox');
+const GLYPHS = '░▒▓█▚▞─│┼·:~';
+function scramble(s, amt){ if (amt <= 0) return s; let o=''; for (const ch of s){ o += (ch!==' ' && Math.random()<amt) ? GLYPHS[Math.floor(Math.random()*GLYPHS.length)] : ch; } return o; }
+function tune(f){
+  freq = Math.max(MIN, Math.min(MAX, Math.round(f*10)/10));
+  const x = (freq-MIN)/(MAX-MIN);
+  needle.style.left = (x*100)+'%';
+  knob.style.transform = `rotate(${x*540-270}deg)`;
+  freqEl.textContent = freq.toFixed(1);
+  band.setAttribute('aria-valuenow', freq.toFixed(1));
+  let best = null, bd = 99;
+  stations.forEach(s=>{ const d = Math.abs(s.f-freq); if (d < bd){ bd = d; best = s; } });
+  const strength = Math.max(0, 1 - bd/0.9);
+  bars.forEach((b,i)=>b.classList.toggle('lit', strength > i/5 + .05));
+  radioBox.style.setProperty('--glow', strength);
+  $$('button', sb).forEach((b,i)=>b.classList.toggle('on', stations[i]===best && strength>.95));
+  if (strength > .15){
+    callEl.innerHTML = `${best.call} · ${best.f.toFixed(1)}<b>${scramble(best.name, (1-strength)*.8)}</b>`;
+    txtEl.textContent = scramble(best.txt, Math.pow(1-strength,.7));
+    txtEl.classList.toggle('static', strength < .6);
+  } else {
+    callEl.innerHTML = 'Searching…<b>— static —</b>';
+    txtEl.textContent = scramble('· · · · · · · · · · · · · · · · · · · · · · · · · ·', .8);
+    txtEl.classList.add('static');
+  }
+  if (strength > .95 && best !== lastStation){ lastStation = best; band.setAttribute('aria-valuetext', `${freq.toFixed(1)}, ${best.name}`); }
+  if (strength <= .95) lastStation = null;
+  audioUpdate(strength);
+}
+let glideRaf;
+function glideTo(target){
+  cancelAnimationFrame(glideRaf);
+  const from = freq, t0 = performance.now(), dur = 900;
+  (function g(t){ const p=Math.min(1,(t-t0)/dur), e = p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2; tune(from+(target-from)*e); if (p<1) glideRaf=requestAnimationFrame(g); })(t0);
+}
+function bandPos(e){ const r = band.getBoundingClientRect(); return MIN + (e.clientX - r.left)/r.width*(MAX-MIN); }
+let dragBand = false;
+band.addEventListener('pointerdown', e=>{ dragBand = true; band.setPointerCapture(e.pointerId); cancelAnimationFrame(glideRaf); tune(bandPos(e)); });
+band.addEventListener('pointermove', e=>{ if (dragBand) tune(bandPos(e)); });
+band.addEventListener('pointerup', ()=>dragBand=false);
+band.addEventListener('keydown', e=>{
+  const step = e.shiftKey ? 1 : .1;
+  if (e.key==='ArrowRight'||e.key==='ArrowUp'){ e.preventDefault(); tune(freq+step); }
+  if (e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); tune(freq-step); }
+});
+let knobDrag = null;
+knob.addEventListener('pointerdown', e=>{ knobDrag = {x:e.clientX, y:e.clientY, f:freq}; knob.setPointerCapture(e.pointerId); cancelAnimationFrame(glideRaf); });
+knob.addEventListener('pointermove', e=>{ if (!knobDrag) return; const d = (e.clientX-knobDrag.x) - (e.clientY-knobDrag.y); tune(knobDrag.f + d*.04); });
+knob.addEventListener('pointerup', ()=>knobDrag=null);
+[knob, band].forEach(el=>el.addEventListener('wheel', e=>{ e.preventDefault(); cancelAnimationFrame(glideRaf); tune(freq + (e.deltaY>0?-.1:.1)); }, {passive:false}));
+
+// audio: static hiss + a warm carrier hum when locked. Off until the visitor turns it on.
+let AC, noiseGain, humGain, soundOn = false;
+function initAudio(){
+  AC = new (window.AudioContext||window.webkitAudioContext)();
+  const len = AC.sampleRate*2, buf = AC.createBuffer(1,len,AC.sampleRate), d = buf.getChannelData(0);
+  for (let i=0;i<len;i++) d[i] = (Math.random()*2-1)*(Math.random()<.002?3:1);
+  const src = AC.createBufferSource(); src.buffer = buf; src.loop = true;
+  const bp = AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1800; bp.Q.value=.6;
+  noiseGain = AC.createGain(); noiseGain.gain.value = 0;
+  src.connect(bp).connect(noiseGain).connect(AC.destination); src.start();
+  humGain = AC.createGain(); humGain.gain.value = 0;
+  const lp = AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900;
+  [110, 164.8, 220.5].forEach((hz,i)=>{ const o=AC.createOscillator(); o.type= i?'sine':'triangle'; o.frequency.value=hz; const g=AC.createGain(); g.gain.value= i?.25:.4; o.connect(g).connect(lp); o.start(); });
+  const lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value=.25; lg.gain.value=.012; lfo.connect(lg).connect(humGain.gain); lfo.start();
+  lp.connect(humGain).connect(AC.destination);
+}
+function audioUpdate(s){
+  if (!AC || !soundOn) return;
+  const now = AC.currentTime;
+  noiseGain.gain.setTargetAtTime((1-s)*.09 + .006, now, .05);
+  humGain.gain.setTargetAtTime(s>.9 ? .035 : 0, now, .2);
+}
+$('#power').addEventListener('click', e=>{
+  soundOn = !soundOn;
+  if (soundOn && !AC){ try { initAudio(); } catch(err){ soundOn = false; toast('This browser won\'t carry the signal.'); return; } }
+  if (AC){ if (soundOn) AC.resume(); else { noiseGain.gain.setTargetAtTime(0,AC.currentTime,.05); humGain.gain.setTargetAtTime(0,AC.currentTime,.05); } }
+  e.currentTarget.setAttribute('aria-pressed', soundOn);
+  $('#powerLbl').textContent = soundOn ? 'Sound on' : 'Sound off';
+  tune(freq);
+});
+tune(90.0);
+// when visible, drift the dial onto the first station once so the mechanism announces itself
+const rio = new IntersectionObserver(es=>{ if (es[0].isIntersecting){ setTimeout(()=>glideTo(88.7), 700); rio.disconnect(); } }, {threshold:.5});
+rio.observe(radioBox);
+
+/* ───────── the encounter ───────── */
+const enc = $('#enc');
+const Q = [
+  {p:'You arrive at an unmarked door on Liberty Avenue. It is already slightly open.',
+   c:[['Knock, then wait.', {DODO:2,'Samizdat':1}],['Go straight in.', {STRATA:2,'Project Amelia':1}],['Stand still until someone notices you.', {'The Clearing':2,OjO:1}]]},
+  {p:'Inside, a stranger hands you a blindfold and says nothing.',
+   c:[['Put it on.', {OjO:3}],['Ask who sent them.', {DODO:2,'Samizdat':1}],['Hand it to the person behind you.', {'Project Amelia':2,STRATA:1}]]},
+  {p:'A voice asks what you came here to lose.',
+   c:[['My sense of direction.', {OjO:1,'The Clearing':2}],['My certainty.', {'Samizdat':3}],['Nothing. I came to find something.', {STRATA:2,DODO:1}]]}
+];
+const R = {
+  'STRATA':{t:'STRATA', d:'Your Agent has been waiting. Report to the refitnessing center. Your choices from here on decide your destiny, so choose with care.'},
+  'OjO':{t:'OjO', d:'Your itinerary is ready. You\'ll travel far without seeing a thing. Wear comfortable shoes and let your other senses lead.'},
+  'DODO':{t:'DODO', d:'The society has watched you since before you arrived. Meet us in the museum after closing. Tell no one. Bring nothing.'},
+  'The Clearing':{t:'The Clearing', d:'Go to the quiet meadow, two at a time. Don\'t worry about whether it\'s the past or the future. Just stay.'},
+  'Project Amelia':{t:'Project Amelia', d:'Aura is pleased to welcome you to the launch. Amelia already knows a great deal about you. Please relax and let go.'},
+  'Samizdat':{t:'Samizdat', d:'You will receive an address. Do not repost it. Tell one friend you trust, in person, and pass it on.'}
+};
+let score = {}, qi = 0;
+function encIntro(){
+  enc.innerHTML = `<div class="step"><div class="count">A private rite of passage · ~1 minute</div>
+    <div class="prompt">Your Agent will see you now.</div>
+    <button class="begin" id="encGo">Begin the encounter</button></div>`;
+  $('#encGo').addEventListener('click', ()=>{ score = {}; qi = 0; encStep(); });
+}
+function encStep(){
+  const q = Q[qi];
+  enc.innerHTML = `<div class="step"><div class="count">${['I','II','III'][qi]} / III</div>
+    <div class="prompt">${q.p}</div>
+    <div class="choices">${q.c.map((c,i)=>`<button data-i="${i}"><span>${'ABC'[i]}</span>${c[0]}</button>`).join('')}</div></div>
+    <button class="safeword" id="safe">Safe word ✕</button>`;
+  $$('.choices button', enc).forEach(b=>b.addEventListener('click', ()=>{
+    const w = q.c[+b.dataset.i][1]; for (const k in w) score[k] = (score[k]||0) + w[k];
+    qi++; qi < Q.length ? encStep() : encResult();
+  }));
+  $('#safe').addEventListener('click', encSafe);
+  const first = $('.choices button', enc); if (first) first.focus({preventScroll:true});
+}
+function encResult(){
+  const top = Object.entries(score).sort((a,b)=>b[1]-a[1] || Math.random()-.5)[0][0], r = R[top];
+  enc.innerHTML = `<div class="step assignment"><div class="count">You have been assigned</div>
+    <h4>${r.t}</h4><p>${r.d}</p><button class="begin" id="encAgain">Begin again</button></div>`;
+  $('#encAgain').addEventListener('click', ()=>{ score = {}; qi = 0; encStep(); });
+  if (!reduce) storm = Math.max(storm, .35);
+}
+function encSafe(){
+  enc.innerHTML = `<div class="step"><div class="count">Safe word received</div>
+    <div class="prompt">Understood. The house lights come up.<br><span style="color:var(--dim)">Nothing more is asked of you.</span></div>
+    <button class="begin" id="encBack">Return when ready</button></div>`;
+  $('#encBack').addEventListener('click', encIntro);
+}
+encIntro();
+
+/* ───────── pass it on ───────── */
+const SHARE_URL = 'https://claude.ai/artifact/XLL1vbxK4S2oRdCmKcuQnu';
+function copyText(text, ok){
+  const fallback = () => { const t=document.createElement('textarea'); t.value=text; t.setAttribute('readonly',''); t.style.cssText='position:fixed;opacity:0'; document.body.appendChild(t); t.select(); let done=false; try{ done=document.execCommand('copy'); }catch(e){} t.remove(); toast(done ? ok : text, done ? 3200 : 7000); };
+  try { navigator.clipboard.writeText(text).then(()=>toast(ok), fallback); } catch(e){ fallback(); }
+}
+$('#pass').addEventListener('click', ()=>copyText(SHARE_URL.startsWith('http') ? SHARE_URL : location.href, 'Link copied. Pass it hand to hand.'));
+$('#mail').addEventListener('click', ()=>copyText('jeff@bricolagepgh.org', 'Address copied: jeff@bricolagepgh.org'));
+
+/* ───────── the conjurer's storm ───────── */
+let typed = '';
+const flash = $('.flash');
+addEventListener('keydown', e=>{
+  if (e.target.closest && e.target.closest('input,textarea')) return;
+  if (e.key.length !== 1) return;
+  typed = (typed + e.key.toLowerCase()).slice(-12);
+  if (typed.endsWith('prospero')) { typed = ''; raiseStorm(); }
+});
+function raiseStorm(){
+  storm = 1;
+  toast('“Deeper than did ever plummet sound / I\'ll drown my book.”', 5200);
+  if (reduce) return;
+  [0,140,260,1100,1240].forEach((d,i)=>setTimeout(()=>{ flash.animate([{opacity:i%2?.35:.6},{opacity:0}],{duration:i%2?380:220,easing:'ease-out'}); }, d));
+  if (AC && soundOn){
+    const n = AC.createBufferSource(), len = AC.sampleRate*3, b = AC.createBuffer(1,len,AC.sampleRate), d = b.getChannelData(0);
+    for (let i=0;i<len;i++) d[i] = (Math.random()*2-1)*Math.pow(1-i/len,2);
+    n.buffer = b; const lp = AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=220; const g = AC.createGain(); g.gain.value=.5;
+    n.connect(lp).connect(g).connect(AC.destination); n.start(AC.currentTime+.25);
+  }
+}
+
+console.log('%cYou looked behind the curtain.%c\nGood. Participation is not optional here. Try typing the conjurer\'s name on the page.',
+  'font:italic 20px Georgia;color:#7fdcff','font:12px monospace;color:#9a968c');
+})();
+</script>
